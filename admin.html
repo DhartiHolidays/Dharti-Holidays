@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Hotel Approvals — Dharti Holidays</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="images/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/explore.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav class="nav wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="Dharti Holidays logo">
+      <span class="brand-text">Dharti Holidays<span>ADMIN PANEL</span></span>
+    </a>
+  </nav>
+</header>
+
+<!-- Password gate -->
+<div class="dest-section" id="gateSection">
+  <div class="wrap">
+    <div class="admin-gate">
+      <h2>Admin Access</h2>
+      <p style="margin:12px 0 20px;">Enter your admin key to view pending hotel submissions.</p>
+      <input type="password" id="adminKey" placeholder="Admin key">
+      <button class="btn btn-primary" id="unlockBtn">Unlock</button>
+      <p class="form-note" id="gateError" style="color:var(--red);"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard (hidden until unlocked) -->
+<div class="dest-section" id="dashboardSection" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Review Queue</span>
+      <h2>Pending Hotel Submissions</h2>
+    </div>
+    <div id="pendingList"></div>
+    <div class="empty-state" id="emptyState" hidden>No pending submissions right now.</div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
