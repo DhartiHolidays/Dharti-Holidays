@@ -38,12 +38,149 @@
 <!-- Dashboard (hidden until unlocked) -->
 <div class="dest-section" id="dashboardSection" hidden>
   <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">Review Queue</span>
-      <h2>Pending Hotel Submissions</h2>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="pending">Pending Review</button>
+      <button class="admin-tab-btn" data-tab="live">Live Hotels</button>
+      <button class="admin-tab-btn" data-tab="destinations">Destinations</button>
+      <button class="admin-tab-btn" data-tab="packages">Packages</button>
     </div>
-    <div id="pendingList"></div>
-    <div class="empty-state" id="emptyState" hidden>No pending submissions right now.</div>
+
+    <div id="pendingPanel">
+      <div class="section-head">
+        <span class="eyebrow">Review Queue</span>
+        <h2>Pending Hotel Submissions</h2>
+      </div>
+      <div id="pendingList"></div>
+      <div class="empty-state" id="emptyState" hidden>No pending submissions right now.</div>
+    </div>
+
+    <div id="livePanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Currently Showing</span>
+        <h2>Live Hotels on the Website</h2>
+      </div>
+      <div id="liveList"></div>
+      <div class="empty-state" id="liveEmptyState" hidden>No live hotels yet.</div>
+    </div>
+
+    <div id="destinationsPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Explore &amp; Book</span>
+        <h2>Manage Destinations</h2>
+      </div>
+      <form class="admin-form" id="destForm" style="margin-bottom:34px;">
+        <input type="hidden" id="destId">
+        <div class="form-section">
+          <h3 id="destFormTitle">Add a Destination</h3>
+          <div class="form-row">
+            <div class="field">
+              <label for="destName">Name</label>
+              <input type="text" id="destName" required placeholder="e.g. Vietnam">
+            </div>
+            <div class="field">
+              <label for="destCode">Airport / Route Code</label>
+              <input type="text" id="destCode" required placeholder="e.g. SGN">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="destRegion">Region</label>
+              <select id="destRegion">
+                <option value="domestic">Domestic</option>
+                <option value="international">International</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="destTagline">Tagline</label>
+              <input type="text" id="destTagline" required placeholder="Short one-line description">
+            </div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="destSubmitBtn">Add Destination</button>
+            <button type="button" class="btn btn-outline" id="destCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div id="destList"></div>
+    </div>
+
+    <div id="packagesPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Homepage</span>
+        <h2>Manage Packages</h2>
+      </div>
+      <form class="admin-form" id="pkgForm" style="margin-bottom:34px;">
+        <input type="hidden" id="pkgId">
+        <div class="form-section">
+          <h3 id="pkgFormTitle">Add a Package</h3>
+          <div class="form-row">
+            <div class="field">
+              <label for="pkgCategory">Category</label>
+              <select id="pkgCategory">
+                <option value="domestic">Domestic</option>
+                <option value="international">International</option>
+                <option value="honeymoon">Honeymoon</option>
+                <option value="corporate">Corporate &amp; Group</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pkgTag">Tag</label>
+              <input type="text" id="pkgTag" placeholder="e.g. Popular, Value, Premium">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="pkgRouteFrom">Route From (optional)</label>
+              <input type="text" id="pkgRouteFrom" placeholder="e.g. AMD">
+            </div>
+            <div class="field">
+              <label for="pkgRouteTo">Route To (optional)</label>
+              <input type="text" id="pkgRouteTo" placeholder="e.g. GOI">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="pkgDestLabel">Destination / Title Label</label>
+              <input type="text" id="pkgDestLabel" required placeholder="e.g. Goa, or 'Corporate Offsites'">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="pkgDescription">Description</label>
+              <textarea id="pkgDescription" required placeholder="One line about what's included"></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta1Label">Meta 1 Label</label><input type="text" id="pkgMeta1Label" placeholder="Duration"></div>
+            <div class="field"><label for="pkgMeta1Value">Meta 1 Value</label><input type="text" id="pkgMeta1Value" placeholder="5N/6D"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta2Label">Meta 2 Label</label><input type="text" id="pkgMeta2Label" placeholder="Best Season"></div>
+            <div class="field"><label for="pkgMeta2Value">Meta 2 Value</label><input type="text" id="pkgMeta2Value" placeholder="Oct–Mar"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta3Label">Meta 3 Label</label><input type="text" id="pkgMeta3Label" placeholder="Ideal For"></div>
+            <div class="field"><label for="pkgMeta3Value">Meta 3 Value</label><input type="text" id="pkgMeta3Value" placeholder="Family"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgPrice">Price</label><input type="text" id="pkgPrice" required placeholder="18999 or Custom"></div>
+            <div class="field"><label for="pkgPriceUnit">Price Unit</label><input type="text" id="pkgPriceUnit" placeholder="per person onward"></div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="pkgSubmitBtn">Add Package</button>
+            <button type="button" class="btn btn-outline" id="pkgCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div class="tabs" id="pkgFilterTabs" style="margin-bottom:20px;">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="domestic">Domestic</button>
+        <button class="tab-btn" data-filter="international">International</button>
+        <button class="tab-btn" data-filter="honeymoon">Honeymoon</button>
+        <button class="tab-btn" data-filter="corporate">Corporate</button>
+      </div>
+      <div id="pkgList"></div>
+    </div>
   </div>
 </div>
 
