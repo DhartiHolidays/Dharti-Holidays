@@ -1,0 +1,3 @@
+Destination,Region,Hotel Name,City/Area,Category,Price Per Night,Rating,Amenities,Google Maps Link,Photo URL
+Kerala,domestic,Example Backwater Resort,Alleppey,Deluxe,4500,4.5,"Pool, Breakfast Included, Free WiFi",https://maps.google.com/?q=example,
+Vietnam,international,Example Old Quarter Hotel,Hanoi,Budget,2200,4.0,"Free WiFi, Breakfast Included",,
