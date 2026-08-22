@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore & Book — Dharti Holidays | Browse Destinations & Hotels</title>
+<meta name="description" content="Browse destinations and hotels with Dharti Holidays, build your trip shortlist, and send an enquiry for a personalised quote — no payment required.">
+<link rel="icon" href="images/logo.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/explore.css">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header id="siteHeader">
+  <nav class="nav wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="Dharti Holidays logo">
+      <span class="brand-text">Dharti Holidays<span>AHMEDABAD · SINCE EST.</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="flights.html" target="_blank" class="nav-pill">Flights</a>
+      <a href="explore.html" class="nav-pill nav-pill-highlight">Hotels</a>
+      <a href="packages.html" target="_blank" class="nav-pill">Packages</a>
+      <a href="visa.html" target="_blank" class="nav-pill">Visa</a>
+      <a href="passport.html" target="_blank" class="nav-pill">Passport</a>
+      <a href="index.html#contact" class="nav-pill">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="tel:+919374615071" class="btn btn-navy" style="padding:12px 20px;">Call Now</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<!-- ============ EXPLORE HERO ============ -->
+<section class="explore-hero">
+  <div class="wrap">
+    <span class="eyebrow">Build Your Own Trip</span>
+    <h1>Explore destinations, shortlist hotels, send one enquiry</h1>
+    <p>Browse like you would on any travel site — add the hotels you like to your trip, then send it to us in one message. No payment, no booking pressure — just a fast, accurate quote from our team.</p>
+
+    <div class="explore-search">
+      <input type="text" id="destSearch" placeholder="Search a destination — e.g. Kerala, Dubai, Bali..." autocomplete="off">
+    </div>
+    <div class="region-filter">
+      <button class="region-btn active" data-region="all">All</button>
+      <button class="region-btn" data-region="domestic">Domestic</button>
+      <button class="region-btn" data-region="international">International</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESTINATION GRID ============ -->
+<section class="dest-section">
+  <div class="wrap">
+    <div class="dest-grid" id="destGrid"></div>
+    <div class="dest-no-results" id="destNoResults" hidden>
+      <h3>No destination matches "<span id="destNoResultsQuery"></span>"</h3>
+      <p>We can still plan it as a custom trip — <a href="index.html#contact" style="color:var(--gold); font-weight:700;">send us an enquiry</a> or WhatsApp us directly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESTINATION / HOTEL MODAL ============ -->
+<div class="modal-overlay" id="destModalOverlay"></div>
+<div class="dest-modal" id="destModal">
+  <div class="dest-modal-head">
+    <div>
+      <h2 id="destModalTitle">Destination</h2>
+      <p id="destModalTagline">Tagline</p>
+    </div>
+    <button class="modal-close" id="destModalClose" aria-label="Close">✕</button>
+  </div>
+  <div class="dest-modal-body" id="destModalHotels"></div>
+</div>
+
+<!-- ============ CART TOGGLE + DRAWER ============ -->
+<button class="cart-toggle" id="cartToggle" aria-label="View trip cart">
+  🧳
+  <span class="cart-badge" id="cartBadge" hidden>0</span>
+</button>
+
+<div class="modal-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3>Your Trip Shortlist</h3>
+    <button class="modal-close" id="cartClose" aria-label="Close">✕</button>
+  </div>
+  <div class="cart-body">
+    <div class="cart-empty" id="cartEmpty">Nothing added yet — explore a destination and tap "Add to Trip" on any hotel.</div>
+    <div id="cartList"></div>
+    <div class="cart-total-row" id="cartTotalRow" hidden>
+      <span>Estimated total / night</span>
+      <span id="cartTotal">₹0</span>
+    </div>
+  </div>
+  <div class="cart-foot">
+    <p class="note">This sends your shortlist to our team on WhatsApp — we'll confirm availability and final pricing, no payment needed now.</p>
+    <form class="checkout-form" id="checkoutForm">
+      <div class="field">
+        <label for="coName">Your Name</label>
+        <input type="text" id="coName" placeholder="Full name" required>
+      </div>
+      <div class="field">
+        <label for="coPhone">Phone Number</label>
+        <input type="tel" id="coPhone" placeholder="+91" required>
+      </div>
+      <div class="field">
+        <label for="coDates">Preferred Travel Dates (optional)</label>
+        <input type="text" id="coDates" placeholder="e.g. Dec 20 - Dec 27">
+      </div>
+      <button type="submit" class="btn btn-primary">Send Enquiry on WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="images/logo.jpg" alt="Dharti Holidays logo">
+          <strong>Dharti Holidays</strong>
+        </div>
+        <p style="max-width:32ch;">Your local travel desk in Ahmedabad for flights, hotels, holidays and visa support.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="explore.html">Explore &amp; Book</a>
+        <a href="index.html#packages">Packages</a>
+        <a href="index.html#services">Services</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+919374615071">+91 93746 15071</a>
+        <a href="https://wa.me/919824044070" target="_blank">WhatsApp: +91 98240 44070</a>
+        <a href="mailto:dhartiholidays@gmail.com">dhartiholidays@gmail.com</a>
+      </div>
+      <div class="footer-col">
+        <h4>Office</h4>
+        <p>521, Satya-2, Ranna Park, Naranpura, Ahmedabad 380013</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year2"></span> Dharti Holidays. All rights reserved.</span>
+      <span>Ranna Park, Naranpura, Ahmedabad</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating WhatsApp -->
+<a class="whatsapp-float" href="https://wa.me/919824044070?text=Hi%20Dharti%20Holidays%2C%20I%27d%20like%20a%20holiday%20package%20quote." target="_blank" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="white"><path d="M16.003 3C9.376 3 4 8.373 4 15c0 2.394.63 4.61 1.83 6.556L4 29l7.66-1.8A11.95 11.95 0 0 0 16.003 27C22.63 27 28 21.627 28 15S22.63 3 16.003 3zm0 21.7a9.66 9.66 0 0 1-4.93-1.35l-.354-.21-4.545 1.07 1.08-4.43-.23-.36A9.63 9.63 0 0 1 6.3 15c0-5.352 4.352-9.7 9.703-9.7 5.352 0 9.7 4.348 9.7 9.7 0 5.353-4.348 9.7-9.7 9.7zm5.32-7.264c-.29-.146-1.716-.847-1.982-.943-.266-.097-.46-.146-.653.146-.194.293-.75.943-.92 1.137-.17.194-.34.218-.63.073-.29-.146-1.224-.451-2.332-1.437-.862-.768-1.444-1.716-1.613-2.008-.17-.293-.018-.451.128-.596.132-.13.29-.34.435-.51.145-.17.194-.293.29-.487.097-.194.049-.365-.024-.51-.073-.146-.653-1.574-.895-2.156-.236-.567-.475-.49-.653-.5-.17-.008-.363-.01-.556-.01-.194 0-.51.073-.777.365-.266.293-1.016.994-1.016 2.423 0 1.43 1.04 2.812 1.185 3.006.146.194 2.048 3.128 4.964 4.387.694.3 1.235.48 1.657.614.696.222 1.33.19 1.83.115.558-.083 1.716-.702 1.958-1.38.242-.68.242-1.26.17-1.38-.073-.122-.266-.194-.556-.34z"/></svg>
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/explore.js"></script>
+</body>
+</html>

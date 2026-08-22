@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flights — Dharti Holidays | Search &amp; Get a Quote</title>
+<meta name="description" content="Tell us your flight requirement — One Way, Round Trip or Multi-City — and get a personalised fare quote from Dharti Holidays.">
+<link rel="icon" href="images/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/explore.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/tools.css">
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav class="nav wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="Dharti Holidays logo">
+      <span class="brand-text">Dharti Holidays<span>AHMEDABAD · SINCE EST.</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="flights.html" class="nav-pill nav-pill-highlight">Flights</a>
+      <a href="explore.html" target="_blank" class="nav-pill">Hotels</a>
+      <a href="packages.html" target="_blank" class="nav-pill">Packages</a>
+      <a href="visa.html" target="_blank" class="nav-pill">Visa</a>
+      <a href="passport.html" target="_blank" class="nav-pill">Passport</a>
+      <a href="index.html#contact" class="nav-pill">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="tel:+919374615071" class="btn btn-navy" style="padding:12px 20px;">Call Now</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<section class="explore-hero" style="padding-bottom:34px;">
+  <div class="wrap">
+    <span class="eyebrow">Flight Enquiry</span>
+    <h1>Tell us where you're flying</h1>
+    <p>We'll check fares across airlines and get back with the best options — no live booking here, just a fast, personal quote.</p>
+  </div>
+</section>
+
+<section class="dest-section" style="padding-top:36px;">
+  <div class="wrap" style="max-width:820px;">
+
+    <div class="trip-type-tabs" id="tripTypeTabs">
+      <button type="button" class="trip-type-btn active" data-type="oneway">One Way</button>
+      <button type="button" class="trip-type-btn" data-type="roundtrip">Round Trip</button>
+      <button type="button" class="trip-type-btn" data-type="multicity">Multi-City</button>
+    </div>
+
+    <form id="flightForm" class="admin-form">
+
+      <!-- ONE WAY / ROUND TRIP -->
+      <div class="form-section" id="simpleTripSection">
+        <h3>Route &amp; Dates</h3>
+        <div class="form-row">
+          <div class="field">
+            <label for="fromAirport">From</label>
+            <input type="text" id="fromAirport" list="airportList" required placeholder="City or airport">
+          </div>
+          <div class="field">
+            <label for="toAirport">To</label>
+            <input type="text" id="toAirport" list="airportList" required placeholder="City or airport">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="departDate">Departure Date</label>
+            <input type="date" id="departDate" required>
+          </div>
+          <div class="field" id="returnDateField" hidden>
+            <label for="returnDate">Return Date</label>
+            <input type="date" id="returnDate">
+          </div>
+        </div>
+      </div>
+
+      <!-- MULTI-CITY -->
+      <div class="form-section" id="multiCitySection" hidden>
+        <h3>Flights</h3>
+        <p class="section-hint">Add each leg of your trip in order.</p>
+        <div id="multiCityLegs"></div>
+        <button type="button" class="btn btn-outline" id="addLegBtn" style="color:var(--navy); border-color:var(--navy); margin-top:8px;">+ Add Another Flight</button>
+      </div>
+
+      <div class="form-section">
+        <h3>Class &amp; Passengers</h3>
+        <div class="form-row">
+          <div class="field">
+            <label for="flightClass">Travel Class</label>
+            <select id="flightClass">
+              <option>Economy</option>
+              <option>Premium Economy</option>
+              <option>Business</option>
+              <option>First Class</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="adultsCount">Adults (12+)</label>
+            <input type="number" id="adultsCount" min="1" value="1" required>
+          </div>
+          <div class="field">
+            <label for="childrenCount">Children (2-11)</label>
+            <input type="number" id="childrenCount" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="infantsCount">Infants (under 2)</label>
+            <input type="number" id="infantsCount" min="0" value="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Your Contact Details</h3>
+        <div class="form-row">
+          <div class="field">
+            <label for="flyerName">Your Name</label>
+            <input type="text" id="flyerName" required placeholder="Full name">
+          </div>
+          <div class="field">
+            <label for="flyerPhone">Phone Number</label>
+            <input type="tel" id="flyerPhone" required placeholder="+91">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field full">
+            <label for="flyerNotes">Any other preferences (optional)</label>
+            <textarea id="flyerNotes" placeholder="Preferred airline, flexible dates, budget range, etc."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:16px;">Get a Fare Quote on WhatsApp</button>
+    </form>
+  </div>
+</section>
+
+<datalist id="airportList"></datalist>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:none; padding-top:0;">
+      <span>© <span id="year"></span> Dharti Holidays. All rights reserved.</span>
+      <span>Ranna Park, Naranpura, Ahmedabad</span>
+    </div>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/919824044070" target="_blank" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="white"><path d="M16.003 3C9.376 3 4 8.373 4 15c0 2.394.63 4.61 1.83 6.556L4 29l7.66-1.8A11.95 11.95 0 0 0 16.003 27C22.63 27 28 21.627 28 15S22.63 3 16.003 3zm0 21.7a9.66 9.66 0 0 1-4.93-1.35l-.354-.21-4.545 1.07 1.08-4.43-.23-.36A9.63 9.63 0 0 1 6.3 15c0-5.352 4.352-9.7 9.703-9.7 5.352 0 9.7 4.348 9.7 9.7 0 5.353-4.348 9.7-9.7 9.7zm5.32-7.264c-.29-.146-1.716-.847-1.982-.943-.266-.097-.46-.146-.653.146-.194.293-.75.943-.92 1.137-.17.194-.34.218-.63.073-.29-.146-1.224-.451-2.332-1.437-.862-.768-1.444-1.716-1.613-2.008-.17-.293-.018-.451.128-.596.132-.13.29-.34.435-.51.145-.17.194-.293.29-.487.097-.194.049-.365-.024-.51-.073-.146-.653-1.574-.895-2.156-.236-.567-.475-.49-.653-.5-.17-.008-.363-.01-.556-.01-.194 0-.51.073-.777.365-.266.293-1.016.994-1.016 2.423 0 1.43 1.04 2.812 1.185 3.006.146.194 2.048 3.128 4.964 4.387.694.3 1.235.48 1.657.614.696.222 1.33.19 1.83.115.558-.083 1.716-.702 1.958-1.38.242-.68.242-1.26.17-1.38-.073-.122-.266-.194-.556-.34z"/></svg>
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/flights.js"></script>
+</body>
+</html>
