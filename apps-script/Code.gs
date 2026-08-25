@@ -17,7 +17,7 @@
 
 // CHANGE THIS to your own secret before deploying — this is
 // the password admin.html will ask you for. Keep it private.
-const SECRET_KEY = 'CHANGE_ME_TO_A_SECRET';
+const SECRET_KEY = 'Dharti@3116';
 
 // Where lead notification emails are sent — change if needed.
 const OWNER_EMAIL = 'salesdhartiholidays@gmail.com';
