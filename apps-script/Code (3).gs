@@ -17,7 +17,7 @@
 
 // CHANGE THIS to your own secret before deploying — this is
 // the password admin.html will ask you for. Keep it private.
-const SECRET_KEY = 'CHANGE_ME_TO_A_SECRET';
+const SECRET_KEY = 'Dharti@3116';
 
 // Where lead notification emails are sent — change if needed.
 const OWNER_EMAIL = 'salesdhartiholidays@gmail.com';
@@ -29,7 +29,7 @@ const OWNER_EMAIL = 'salesdhartiholidays@gmail.com';
    the chat widget. Leave the placeholder in place to keep the
    agent switched off.
    ========================================================= */
-const GEMINI_API_KEY = 'PASTE_YOUR_GEMINI_API_KEY_HERE';
+const GEMINI_API_KEY = 'AQ.Ab8RN6J5Bet14VF8hNka2YXERRO8HGANYZqZ65k_dkMqKvZbpw';
 const AI_MODEL = 'gemini-2.5-flash'; // free-tier eligible, good balance of quality/speed
 // Safety cap: stops answering (with a friendly fallback) once this
 // many AI replies have been sent today, so a traffic spike or abuse
