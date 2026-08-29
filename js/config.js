@@ -45,7 +45,7 @@ const PHOTO_SECTIONS = [
    do, the submission form and admin panel won't be able to
    save or load data. See SETUP-GUIDE.md in this folder.
    ========================================================= */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEAINbjMDi1IPN37oQPu_KKv_iUYcbuRH03_eMGaxfhkUrw-e1vzqHBdL_NQxz24jefw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRjwY2SA6czaGvW2pg9S2UPOvMPzgHbOjbqL2quaV7/dev';
 
 /* =========================================================
    Shared lead logging helper — called from every enquiry
