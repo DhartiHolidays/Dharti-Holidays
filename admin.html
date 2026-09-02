@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Hotel Approvals — Dharti Holidays</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="images/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/explore.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav class="nav wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="Dharti Holidays logo">
+      <span class="brand-text">Dharti Holidays<span>ADMIN PANEL</span></span>
+    </a>
+  </nav>
+</header>
+
+<!-- Password gate -->
+<div class="dest-section" id="gateSection">
+  <div class="wrap">
+    <div class="admin-gate">
+      <h2>Admin Access</h2>
+      <p style="margin:12px 0 20px;">Enter your admin key to view pending hotel submissions.</p>
+      <input type="password" id="adminKey" placeholder="Admin key">
+      <button class="btn btn-primary" id="unlockBtn">Unlock</button>
+      <p class="form-note" id="gateError" style="color:var(--red);"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard (hidden until unlocked) -->
+<div class="dest-section" id="dashboardSection" hidden>
+  <div class="wrap">
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="pending">Pending Review</button>
+      <button class="admin-tab-btn" data-tab="live">Live Hotels</button>
+      <button class="admin-tab-btn" data-tab="destinations">Destinations</button>
+      <button class="admin-tab-btn" data-tab="packages">Packages</button>
+      <button class="admin-tab-btn" data-tab="visa">Visa Services</button>
+      <button class="admin-tab-btn" data-tab="passport">Passport Services</button>
+      <button class="admin-tab-btn" data-tab="bulk">Bulk Import Hotels</button>
+      <button class="admin-tab-btn" data-tab="leads">Leads</button>
+      <button class="admin-tab-btn" data-tab="voucher">Voucher Generator</button>
+      <button class="admin-tab-btn" data-tab="itinerary">Itinerary Generator</button>
+    </div>
+
+    <div id="pendingPanel">
+      <div class="section-head">
+        <span class="eyebrow">Review Queue</span>
+        <h2>Pending Hotel Submissions</h2>
+      </div>
+      <div id="pendingList"></div>
+      <div class="empty-state" id="emptyState" hidden>No pending submissions right now.</div>
+    </div>
+
+    <div id="livePanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Currently Showing</span>
+        <h2>Live Hotels on the Website</h2>
+      </div>
+      <div id="liveList"></div>
+      <div class="empty-state" id="liveEmptyState" hidden>No live hotels yet.</div>
+    </div>
+
+    <div id="destinationsPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Explore &amp; Book</span>
+        <h2>Manage Destinations</h2>
+      </div>
+      <form class="admin-form" id="destForm" style="margin-bottom:34px;">
+        <input type="hidden" id="destId">
+        <div class="form-section">
+          <h3 id="destFormTitle">Add a Destination</h3>
+          <div class="form-row">
+            <div class="field">
+              <label for="destName">Name</label>
+              <input type="text" id="destName" required placeholder="e.g. Vietnam">
+            </div>
+            <div class="field">
+              <label for="destCode">Airport / Route Code</label>
+              <input type="text" id="destCode" required placeholder="e.g. SGN">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="destRegion">Region</label>
+              <select id="destRegion">
+                <option value="domestic">Domestic</option>
+                <option value="international">International</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="destTagline">Tagline</label>
+              <input type="text" id="destTagline" required placeholder="Short one-line description">
+            </div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="destSubmitBtn">Add Destination</button>
+            <button type="button" class="btn btn-outline" id="destCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div id="destList"></div>
+    </div>
+
+    <div id="packagesPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Homepage</span>
+        <h2>Manage Packages</h2>
+      </div>
+      <form class="admin-form" id="pkgForm" style="margin-bottom:34px;">
+        <input type="hidden" id="pkgId">
+        <div class="form-section">
+          <h3 id="pkgFormTitle">Add a Package</h3>
+          <div class="form-row">
+            <div class="field">
+              <label for="pkgCategory">Category</label>
+              <select id="pkgCategory">
+                <option value="domestic">Domestic</option>
+                <option value="international">International</option>
+                <option value="honeymoon">Honeymoon</option>
+                <option value="corporate">Corporate &amp; Group</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pkgTag">Tag</label>
+              <input type="text" id="pkgTag" placeholder="e.g. Popular, Value, Premium">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="pkgRouteFrom">Route From (optional)</label>
+              <input type="text" id="pkgRouteFrom" placeholder="e.g. AMD">
+            </div>
+            <div class="field">
+              <label for="pkgRouteTo">Route To (optional)</label>
+              <input type="text" id="pkgRouteTo" placeholder="e.g. GOI">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="pkgDestLabel">Destination / Title Label</label>
+              <input type="text" id="pkgDestLabel" required placeholder="e.g. Goa, or 'Corporate Offsites'">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="pkgDescription">Description</label>
+              <textarea id="pkgDescription" required placeholder="One line about what's included"></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta1Label">Meta 1 Label</label><input type="text" id="pkgMeta1Label" placeholder="Duration"></div>
+            <div class="field"><label for="pkgMeta1Value">Meta 1 Value</label><input type="text" id="pkgMeta1Value" placeholder="5N/6D"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta2Label">Meta 2 Label</label><input type="text" id="pkgMeta2Label" placeholder="Best Season"></div>
+            <div class="field"><label for="pkgMeta2Value">Meta 2 Value</label><input type="text" id="pkgMeta2Value" placeholder="Oct–Mar"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgMeta3Label">Meta 3 Label</label><input type="text" id="pkgMeta3Label" placeholder="Ideal For"></div>
+            <div class="field"><label for="pkgMeta3Value">Meta 3 Value</label><input type="text" id="pkgMeta3Value" placeholder="Family"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="pkgPrice">Price</label><input type="text" id="pkgPrice" required placeholder="18999 or Custom"></div>
+            <div class="field"><label for="pkgPriceUnit">Price Unit</label><input type="text" id="pkgPriceUnit" placeholder="per person onward"></div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="pkgSubmitBtn">Add Package</button>
+            <button type="button" class="btn btn-outline" id="pkgCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div class="tabs" id="pkgFilterTabs" style="margin-bottom:20px;">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="domestic">Domestic</button>
+        <button class="tab-btn" data-filter="international">International</button>
+        <button class="tab-btn" data-filter="honeymoon">Honeymoon</button>
+        <button class="tab-btn" data-filter="corporate">Corporate</button>
+      </div>
+      <div id="pkgList"></div>
+    </div>
+
+    <div id="visaPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Visa Services</span>
+        <h2>Manage Visa Services</h2>
+      </div>
+      <form class="admin-form" id="visaForm" style="margin-bottom:34px;">
+        <input type="hidden" id="visaId">
+        <div class="form-section">
+          <h3 id="visaFormTitle">Add a Visa Service</h3>
+          <div class="form-row">
+            <div class="field">
+              <label for="visaCountry">Country</label>
+              <input type="text" id="visaCountry" required placeholder="e.g. UAE (Dubai)">
+            </div>
+            <div class="field">
+              <label for="visaType">Visa Type</label>
+              <input type="text" id="visaType" required placeholder="e.g. Tourist Visa">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="visaProcessingTime">Processing Time</label>
+              <input type="text" id="visaProcessingTime" required placeholder="e.g. 3-4 working days">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="visaPrice">Price</label><input type="text" id="visaPrice" required placeholder="3500 or Custom"></div>
+            <div class="field"><label for="visaPriceUnit">Price Unit</label><input type="text" id="visaPriceUnit" placeholder="starting from"></div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="visaNotes">Notes (optional)</label>
+              <textarea id="visaNotes" placeholder="Anything extra worth mentioning"></textarea>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="visaSubmitBtn">Add Visa Service</button>
+            <button type="button" class="btn btn-outline" id="visaCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div id="visaList"></div>
+    </div>
+
+    <div id="passportPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Passport Services</span>
+        <h2>Manage Passport Services</h2>
+      </div>
+      <form class="admin-form" id="passportForm" style="margin-bottom:34px;">
+        <input type="hidden" id="passportId">
+        <div class="form-section">
+          <h3 id="passportFormTitle">Add a Passport Service</h3>
+          <div class="form-row">
+            <div class="field full">
+              <label for="passportServiceType">Service Type</label>
+              <input type="text" id="passportServiceType" required placeholder="e.g. New Passport (Tatkal)">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="passportProcessingTime">Processing Time</label>
+              <input type="text" id="passportProcessingTime" required placeholder="e.g. 7-14 days">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="passportPrice">Price</label><input type="text" id="passportPrice" required placeholder="3500"></div>
+            <div class="field"><label for="passportPriceUnit">Price Unit</label><input type="text" id="passportPriceUnit" placeholder="service fee, excl. govt fee"></div>
+          </div>
+          <div class="form-row">
+            <div class="field full">
+              <label for="passportNotes">Notes (optional)</label>
+              <textarea id="passportNotes" placeholder="Anything extra worth mentioning"></textarea>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="passportSubmitBtn">Add Passport Service</button>
+            <button type="button" class="btn btn-outline" id="passportCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </div>
+      </form>
+      <div id="passportList"></div>
+    </div>
+
+    <div id="bulkPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Bulk Import</span>
+        <h2>Add Many Hotels at Once</h2>
+      </div>
+
+      <div class="form-section" style="margin-bottom:30px;">
+        <h3>How it works</h3>
+        <p class="section-hint" style="margin-bottom:0;">
+          1. Download the template below and fill it in — one row per hotel, in Excel or Google Sheets.<br>
+          2. Save it as a CSV file (File → Download → Comma Separated Values in Google Sheets, or "Save As CSV" in Excel).<br>
+          3. Upload it here. Every hotel is added as <strong>already approved</strong> — no review step, since you're adding it yourself.<br>
+          4. If a Destination in your file doesn't exist yet, it's created automatically.
+        </p>
+      </div>
+
+      <div class="form-section" style="margin-bottom:30px;">
+        <h3>Step 1 — Get the template</h3>
+        <button type="button" class="btn btn-navy" id="downloadTemplateBtn">Download CSV Template</button>
+        <p class="section-hint" style="margin-top:14px; margin-bottom:0;">
+          Columns: <strong>Destination, Region</strong> (domestic/international), <strong>Hotel Name, City/Area, Category</strong> (Budget/Deluxe/Luxury), <strong>Price Per Night, Rating, Amenities</strong> (comma-separated), <strong>Google Maps Link, Photo URL</strong> (all except Destination, Region, Hotel Name, Category, Price are optional).
+        </p>
+      </div>
+
+      <div class="form-section">
+        <h3>Step 2 — Upload your filled-in CSV</h3>
+        <input type="file" id="bulkCsvInput" accept=".csv" style="margin-bottom:16px;">
+        <div id="bulkPreview" style="display:none; margin-bottom:16px;">
+          <p style="font-size:14px; color:var(--navy);"><strong id="bulkPreviewCount"></strong> hotel rows found. Click Import to add them.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="bulkImportBtn" disabled>Import Hotels</button>
+        <div id="bulkResult" style="margin-top:20px;"></div>
+      </div>
+    </div>
+
+    <div id="leadsPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Every Enquiry, In One Place</span>
+        <h2>Leads</h2>
+      </div>
+      <div class="tabs" id="leadFilterTabs" style="margin-bottom:20px;">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="New">New</button>
+        <button class="tab-btn" data-filter="Contacted">Contacted</button>
+        <button class="tab-btn" data-filter="Converted">Converted</button>
+        <button class="tab-btn" data-filter="Lost">Lost</button>
+      </div>
+      <div id="leadsList"></div>
+      <div class="empty-state" id="leadsEmptyState" hidden>No leads yet.</div>
+    </div>
+
+    <div id="voucherPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">One Layout, Any Supplier</span>
+        <h2>Voucher Generator</h2>
+        <p>Fill in the key details from whichever DMC you booked through — MakeMyTrip, TBO, Fly Creative, or direct — and get a clean, print-ready voucher in your own branding every time.</p>
+      </div>
+
+      <div class="voucher-layout">
+        <form class="admin-form" id="voucherForm">
+          <div class="form-section">
+            <h3>Voucher Type</h3>
+            <div class="tabs" id="voucherTypeTabs">
+              <button type="button" class="tab-btn active" data-type="flight">Flight</button>
+              <button type="button" class="tab-btn" data-type="hotel">Hotel</button>
+              <button type="button" class="tab-btn" data-type="train">Train</button>
+              <button type="button" class="tab-btn" data-type="package">Package</button>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Booking Details</h3>
+            <div class="form-row">
+              <div class="field">
+                <label for="vBookingRef">Booking Reference / PNR</label>
+                <input type="text" id="vBookingRef" required placeholder="e.g. ABC123">
+              </div>
+              <div class="field">
+                <label for="vVoucherDate">Voucher / Issue Date</label>
+                <input type="date" id="vVoucherDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="vStatus">Status</label>
+                <select id="vStatus">
+                  <option>Confirmed</option>
+                  <option>Pending</option>
+                  <option>Waitlisted</option>
+                  <option>Cancelled</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="vSource">Booked Via (internal only — not shown on voucher)</label>
+                <select id="vSource">
+                  <option>MakeMyTrip</option>
+                  <option>TBO</option>
+                  <option>Fly Creative</option>
+                  <option>Travelport</option>
+                  <option>TripJack</option>
+                  <option>Direct / Airline</option>
+                  <option>Direct / Hotel</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- FLIGHT FIELDS -->
+          <div class="form-section" id="flightFields">
+            <h3>Passengers</h3>
+            <p class="section-hint">Add each passenger, with seat number if assigned.</p>
+            <div id="flightPassengerRows"></div>
+            <button type="button" class="btn btn-outline" id="addFlightPassengerBtn" style="color:var(--navy); border-color:var(--navy); margin-top:6px;">+ Add Passenger</button>
+
+            <h3 style="margin-top:26px;">Flight Segments</h3>
+            <p class="section-hint">Add one segment per leg — for a return or multi-city trip, add another.</p>
+            <div id="flightLegRows"></div>
+            <button type="button" class="btn btn-outline" id="addFlightLegBtn" style="color:var(--navy); border-color:var(--navy); margin-top:6px;">+ Add Flight Segment</button>
+
+            <h3 style="margin-top:26px;">Fare Breakdown</h3>
+            <div class="form-row">
+              <div class="field"><label for="fBaseFare">Base Fare</label><input type="text" id="fBaseFare" placeholder="e.g. ₹11,080"></div>
+              <div class="field"><label for="fTaxesFees">Taxes &amp; Fees</label><input type="text" id="fTaxesFees" placeholder="e.g. ₹4,544"></div>
+            </div>
+          </div>
+
+          <!-- HOTEL FIELDS -->
+          <div class="form-section" id="hotelFields" hidden>
+            <h3>Hotel Details</h3>
+            <div class="form-row">
+              <div class="field full"><label for="hName">Hotel Name</label><input type="text" id="hName" placeholder="e.g. Marina Bay Hotel"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="hStarRating">Star Rating</label>
+                <select id="hStarRating">
+                  <option value="">Not specified</option>
+                  <option>1 Star</option><option>2 Star</option><option>3 Star</option><option>4 Star</option><option>5 Star</option>
+                </select>
+              </div>
+              <div class="field"><label for="hPhone">Hotel Phone (optional)</label><input type="text" id="hPhone" placeholder="e.g. 9377586325"></div>
+            </div>
+            <div class="form-row">
+              <div class="field full"><label for="hAddress">Hotel Address</label><input type="text" id="hAddress" placeholder="Full address"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="hCheckin">Check-in Date</label><input type="date" id="hCheckin"></div>
+              <div class="field"><label for="hCheckout">Check-out Date</label><input type="date" id="hCheckout"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="hRoomType">Room Type</label><input type="text" id="hRoomType" placeholder="e.g. Club Room"></div>
+              <div class="field"><label for="hRoomCount">Number of Rooms</label><input type="number" id="hRoomCount" min="1" value="1"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="hMealPlan">Meal Plan</label><input type="text" id="hMealPlan" placeholder="e.g. Breakfast Included"></div>
+              <div class="field"><label for="hRefundable">Cancellation Policy</label>
+                <select id="hRefundable">
+                  <option>Refundable</option>
+                  <option>Non-Refundable</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="hAdults">Adults</label><input type="number" id="hAdults" min="1" value="2"></div>
+              <div class="field"><label for="hChildren">Children</label><input type="number" id="hChildren" min="0" value="0"></div>
+            </div>
+            <div class="form-row">
+              <div class="field full"><label for="hPrimaryGuest">Primary Guest Name</label><input type="text" id="hPrimaryGuest" placeholder="e.g. Mr. Ankur Maurya"></div>
+            </div>
+          </div>
+
+          <!-- TRAIN FIELDS -->
+          <div class="form-section" id="trainFields" hidden>
+            <h3>Journey Details</h3>
+            <div class="form-row">
+              <div class="field"><label for="tBoarding">Boarding Station</label><input type="text" id="tBoarding" placeholder="e.g. Delhi Cantt (DEC)"></div>
+              <div class="field"><label for="tDestination">Destination Station</label><input type="text" id="tDestination" placeholder="e.g. Chandigarh (CDG)"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="tDepartDate">Departure Date</label><input type="date" id="tDepartDate"></div>
+              <div class="field"><label for="tDepartTime">Departure Time</label><input type="time" id="tDepartTime"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="tArriveDate">Arrival Date</label><input type="date" id="tArriveDate"></div>
+              <div class="field"><label for="tArriveTime">Arrival Time</label><input type="time" id="tArriveTime"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="tTrainName">Train Number / Name</label><input type="text" id="tTrainName" placeholder="e.g. 20977/CDG VANDEBHARAT"></div>
+              <div class="field"><label for="tClass">Class</label><input type="text" id="tClass" placeholder="e.g. AC Chair Car (CC)"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="tQuota">Quota</label><input type="text" id="tQuota" placeholder="e.g. GENERAL"></div>
+              <div class="field"><label for="tDistance">Distance (optional)</label><input type="text" id="tDistance" placeholder="e.g. 272 KM"></div>
+            </div>
+
+            <h3 style="margin-top:22px;">Passengers</h3>
+            <p class="section-hint">Add each passenger with their booking status.</p>
+            <div id="trainPassengerRows"></div>
+            <button type="button" class="btn btn-outline" id="addTrainPassengerBtn" style="color:var(--navy); border-color:var(--navy); margin-top:6px;">+ Add Passenger</button>
+
+            <h3 style="margin-top:22px;">Fare Breakdown</h3>
+            <div class="form-row">
+              <div class="field"><label for="tTicketFare">Ticket Fare</label><input type="text" id="tTicketFare" placeholder="e.g. ₹730"></div>
+              <div class="field"><label for="tOtherCharges">Other Charges (fees, insurance)</label><input type="text" id="tOtherCharges" placeholder="e.g. ₹81.33"></div>
+            </div>
+          </div>
+
+          <!-- PACKAGE FIELDS -->
+          <div class="form-section" id="packageFields" hidden>
+            <h3>Traveler(s)</h3>
+            <div class="form-row">
+              <div class="field full">
+                <label for="vTravelers">Traveler Name(s)</label>
+                <textarea id="vTravelers" placeholder="One per line, e.g.&#10;Mr. Rajesh Patel&#10;Mrs. Priya Patel"></textarea>
+              </div>
+            </div>
+            <h3 style="margin-top:22px;">Package Details</h3>
+            <div class="form-row">
+              <div class="field full"><label for="pName">Package / Destination</label><input type="text" id="pName" placeholder="e.g. 5N/6D Kashmir Package"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label for="pStartDate">Start Date</label><input type="date" id="pStartDate"></div>
+              <div class="field"><label for="pEndDate">End Date</label><input type="date" id="pEndDate"></div>
+            </div>
+            <div class="form-row">
+              <div class="field full"><label for="pItinerary">Itinerary Summary</label><textarea id="pItinerary" placeholder="Day 1: Arrival, houseboat check-in&#10;Day 2: Gulmarg excursion&#10;..."></textarea></div>
+            </div>
+            <div class="form-row">
+              <div class="field full"><label for="pInclusions">Inclusions</label><textarea id="pInclusions" placeholder="Hotel, breakfast, airport transfers, sightseeing..."></textarea></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Total &amp; Notes</h3>
+            <div class="form-row">
+              <div class="field">
+                <label for="vAmount">Total Amount</label>
+                <input type="text" id="vAmount" placeholder="e.g. ₹42,999">
+              </div>
+              <div class="field">
+                <label for="vPaymentStatus">Payment Status</label>
+                <select id="vPaymentStatus">
+                  <option>Paid</option>
+                  <option>Partially Paid</option>
+                  <option>Pending</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field full">
+                <label for="vNotes">Additional Notes / Important Information (optional)</label>
+                <textarea id="vNotes" placeholder="ID proof requirements, cancellation terms, insurance reminders, etc."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:16px;">Generate Voucher</button>
+        </form>
+
+        <div id="voucherPreviewWrap">
+          <div id="voucherPreview" hidden></div>
+          <div class="voucher-actions" id="voucherActions" hidden>
+            <button type="button" class="btn btn-navy" id="printVoucherBtn">Print / Save as PDF</button>
+            <button type="button" class="btn btn-outline" id="newVoucherBtn" style="color:var(--navy); border-color:var(--navy);">New Voucher</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="itineraryPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Upload · Extract · Rebrand</span>
+        <h2>Itinerary Generator</h2>
+        <p>Upload any DMC's itinerary PDF (like TravClan, Fly Creative, etc.) and get it back in your own branded template — same content, your look. Nothing is invented; only what's in the source document is used.</p>
+      </div>
+
+      <div class="form-section" style="margin-bottom:30px;">
+        <h3>Upload the Source PDF</h3>
+        <input type="file" id="itineraryPdfInput" accept="application/pdf" style="margin-bottom:16px;">
+        <button type="button" class="btn btn-primary" id="extractItineraryBtn" disabled>Generate Branded Itinerary</button>
+        <div id="itineraryStatus" style="margin-top:16px;"></div>
+      </div>
+
+      <div id="itineraryPreviewWrap">
+        <div id="itineraryPreview" hidden></div>
+        <div class="voucher-actions" id="itineraryActions" hidden>
+          <button type="button" class="btn btn-navy" id="printItineraryBtn">Print / Save as PDF</button>
+          <button type="button" class="btn btn-outline" id="newItineraryBtn" style="color:var(--navy); border-color:var(--navy);">Start Over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
