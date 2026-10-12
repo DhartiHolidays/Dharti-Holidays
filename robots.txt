@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /document-studio.html
+
+Sitemap: https://dhartiholidays.com/sitemap.xml
