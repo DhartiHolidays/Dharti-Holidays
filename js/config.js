@@ -129,7 +129,7 @@ function showEnquiryConfirmation(enquiryNo, name, phone, waUrl) {
    Streams → Web, then paste the "G-XXXXXXXXXX" ID below.
    Never loads on the admin pages.
    ========================================================= */
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+const GA_MEASUREMENT_ID = 'G-K3NCJSTVSS';
 (function () {
   if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID.includes('XXXX')) return;
   if (/admin|document-studio/.test(location.pathname)) return;
