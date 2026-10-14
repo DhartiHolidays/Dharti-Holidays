@@ -47,6 +47,8 @@
       <button class="admin-tab-btn" data-tab="passport">Passport Services</button>
       <button class="admin-tab-btn" data-tab="bulk">Bulk Import Hotels</button>
       <button class="admin-tab-btn" data-tab="leads">Leads</button>
+      <button class="admin-tab-btn" data-tab="blog">Blog</button>
+      <button class="admin-tab-btn" data-tab="newsletter">Newsletter</button>
       <button class="admin-tab-btn" data-tab="voucher">Voucher Generator</button>
       <a href="document-studio.html" target="_blank" rel="noopener noreferrer" class="admin-tab-btn doc-studio-tab">📄 Open Document Studio</a>
     </div>
@@ -345,6 +347,66 @@
       </div>
       <div id="leadsList"></div>
       <div class="empty-state" id="leadsEmptyState" hidden>No leads yet.</div>
+    </div>
+
+    <div id="blogPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Content</span>
+        <h2>Blog Posts</h2>
+        <p>Write travel tips and guides. Published posts appear on blog.html and on your homepage. New posts are saved as Draft until you set them to Published.</p>
+      </div>
+      <div id="postList"></div>
+      <div class="empty-state" id="postEmptyState" hidden>No posts yet — write your first one below.</div>
+      <div class="form-section" style="margin-top:30px;">
+        <h3 id="postFormTitle">Write a Post</h3>
+        <form id="postForm" class="admin-form">
+          <input type="hidden" id="postId"><input type="hidden" id="postPublishedAt"><input type="hidden" id="postCoverUrl">
+          <div class="form-row"><div class="field full"><label for="postTitle">Title</label><input type="text" id="postTitle" required placeholder="e.g. Best time to visit Kerala"></div></div>
+          <div class="form-row">
+            <div class="field"><label for="postCategory">Category</label><input type="text" id="postCategory" list="postCatList" placeholder="e.g. Travel Tips">
+              <datalist id="postCatList"><option value="Travel Tips"><option value="Visa Help"><option value="Passport Help"><option value="Destinations"><option value="Offers"></datalist></div>
+            <div class="field"><label for="postAuthor">Author (optional)</label><input type="text" id="postAuthor" placeholder="Dharti Holidays"></div>
+          </div>
+          <div class="form-row"><div class="field full"><label for="postSummary">Short summary (shown on the blog list and in Google results)</label><textarea id="postSummary" maxlength="200" placeholder="One or two sentences"></textarea></div></div>
+          <div class="form-row"><div class="field full"><label for="postBody">Article text</label><textarea id="postBody" class="long-textarea" required></textarea>
+            <small style="color:var(--slate); font-size:12px;">Leave a blank line between paragraphs. Start a line with <strong>## </strong> for a heading, and start lines with <strong>- </strong> for a bullet list.</small></div></div>
+          <div class="form-row"><div class="field full"><label for="postCoverInput">Cover photo (upload from your computer)</label><input type="file" id="postCoverInput" accept="image/*"><div id="postCoverPreview" class="dest-photo-preview"></div></div></div>
+          <div class="form-row"><div class="field"><label for="postStatus">Status</label><select id="postStatus"><option value="draft">Draft (hidden)</option><option value="published">Published (live on the website)</option></select></div></div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" id="postSubmitBtn">Save Post</button>
+            <button type="button" class="btn btn-outline" id="postCancelBtn" style="color:var(--navy); border-color:var(--navy);" hidden>Cancel Edit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="newsletterPanel" hidden>
+      <div class="section-head">
+        <span class="eyebrow">Email</span>
+        <h2>Newsletter</h2>
+        <p>People who sign up on your website appear here. Send them an email directly from this page, or download the list and use Brevo or Mailchimp.</p>
+      </div>
+      <div class="form-section">
+        <h3>Subscribers: <span id="subCount">0</span></h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+          <button type="button" class="btn btn-outline" id="subExportBtn" style="color:var(--navy); border-color:var(--navy);">Download list (CSV) for Brevo / Mailchimp</button>
+        </div>
+        <div id="subList"></div>
+      </div>
+      <div class="form-section" style="margin-top:24px;">
+        <h3>Send an email to all subscribers</h3>
+        <p style="font-size:13px; color:var(--slate); margin-bottom:14px;">Sent from your Gmail. A free Gmail account can send about 100 emails a day (shared with your enquiry alerts); a Google Workspace account about 1,500. If your list is larger, anyone not reached today is reported, or use Brevo / Mailchimp instead. Always send yourself a test first.</p>
+        <form id="nlSendForm" class="admin-form">
+          <div class="form-row"><div class="field full"><label for="nlSubject">Subject</label><input type="text" id="nlSubject" required placeholder="e.g. Winter holiday offers from Dharti Holidays"></div></div>
+          <div class="form-row"><div class="field full"><label for="nlMessage">Message</label><textarea id="nlMessage" class="long-textarea" required></textarea>
+            <small style="color:var(--slate); font-size:12px;">Blank line = new paragraph. <strong>## </strong> = heading. <strong>- </strong> = bullet. Web links become clickable. Your logo header, address and an unsubscribe link are added automatically.</small></div></div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline" id="nlTestBtn" style="color:var(--navy); border-color:var(--navy);">Send test to myself</button>
+            <button type="submit" class="btn btn-primary" id="nlSendBtn">Send to all subscribers</button>
+          </div>
+          <p id="nlSendStatus" style="margin-top:14px; font-size:13.5px;"></p>
+        </form>
+      </div>
     </div>
 
     <div id="voucherPanel" hidden>
