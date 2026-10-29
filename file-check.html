@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>File check — Dharti Holidays</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #FAF6ED; color: #1C2430; margin: 0; padding: 28px 16px; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { color: #0B2545; font-size: 24px; margin: 0 0 6px; }
+  p.sub { color: #5B6472; font-size: 14px; margin: 0 0 18px; line-height: 1.5; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #E4DCC8; font-size: 13.5px; vertical-align: top; }
+  th { background: #0B2545; color: #fff; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+  .ok { color: #1E7A44; font-weight: 700; } .bad { color: #C4272B; font-weight: 700; } .na { color: #A5651C; font-weight: 700; }
+  code { font-size: 12.5px; background: #FAF6ED; padding: 1px 5px; border-radius: 3px; }
+  #summary { margin: 18px 0; padding: 14px 16px; border-radius: 8px; font-size: 15px; font-weight: 700; }
+  .good { background: rgba(46,158,91,.14); color: #1E7A44; } .warn { background: #FCEFE0; color: #A5651C; }
+  small { color: #5B6472; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Website file check</h1>
+  <p class="sub">Checks that the newest version of each important file is live on your site. Green means correct. Red means that file is missing, in the wrong folder, an old version, or a different file saved under that name. You can delete this page when you are done.</p>
+  <div id="summary" class="warn">Checking...</div>
+  <table>
+    <thead><tr><th>File</th><th>Size</th><th>Result</th><th>What it means</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<script>
+// [path, text that MUST be inside the newest version, text that must NOT be inside (optional), what the file does]
+var CHECKS = [
+  ['js/ai-chat.js', 'dhartiAiChat', 'unlockBtn', 'Chat button and chat window (this is the one that brings the AI icon back)'],
+  ['css/ai-chat.css', '.ai-chips', '', 'Chat styling (quick-start buttons, formatted replies)'],
+  ['js/admin.js', 'loadAIAdmin', '', 'Admin panel logic (AI Assistant tab)'],
+  ['admin.html', 'id="aiPanel"', '', 'Admin panel page (AI Assistant tab)'],
+  ['js/config.js', 'submitEnquiry', '', 'Shared settings (keep your own Web App URL in it)'],
+  ['js/package.js', 'PRINT_IMG_WAIT', '', 'Package page and PDF download'],
+  ['js/packages.js', 'package.html?id=', '', 'Package cards'],
+  ['css/package.css', '.pk-day-photos', '', 'Package page styling'],
+  ['js/vehicle.js', 'vdForm', '', 'Vehicle page'],
+  ['vehicle.html', 'id="vehRoot"', '', 'Vehicle page'],
+  ['js/car-transfer.js', 'vehCardHtml', '', 'Car Transfer page'],
+  ['css/style.css', '.call-menu', '', 'Main site styling'],
+  ['index.html', 'call-menu', '', 'Homepage'],
+  ['js/destination.js', 'setCanonicalUrl', '', 'Destination guide page'],
+  ['js/post.js', 'setCanonicalUrl', '', 'Blog article page']
+];
+var rows = document.getElementById('rows'), good = 0, bad = 0, na = 0, pending = CHECKS.length;
+function addRow(path, size, cls, label, note) {
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><code>' + path + '</code></td><td>' + size + '</td><td class="' + cls + '">' + label + '</td><td>' + note + '</td>';
+  rows.appendChild(tr);
+}
+function finish() {
+  if (--pending) return;
+  var s = document.getElementById('summary');
+  if (!bad && !na) { s.className = 'good'; s.textContent = 'All ' + good + ' files are the newest version.'; }
+  else { s.className = 'warn'; s.textContent = good + ' correct, ' + bad + ' need attention' + (na ? ', ' + na + ' not found' : '') + '. Fix the red rows first, starting from the top.'; }
+}
+CHECKS.forEach(function (c) {
+  fetch('/' + c[0] + '?check=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) { na++; addRow(c[0], '-', 'na', 'NOT FOUND', 'Not on the site at this path (HTTP ' + r.status + '). Upload it into the right folder. ' + c[3]); finish(); return null; }
+    return r.text().then(function (t) {
+      var kb = (t.length / 1024).toFixed(1) + ' KB';
+      var hasNew = t.indexOf(c[1]) !== -1, hasWrong = c[2] && t.indexOf(c[2]) !== -1;
+      if (hasNew && !hasWrong) { good++; addRow(c[0], kb, 'ok', 'CORRECT', c[3]); }
+      else { bad++; addRow(c[0], kb, 'bad', hasWrong ? 'WRONG FILE' : 'OLD VERSION', hasWrong ? 'A different file (admin code) is saved under this name. Delete it and upload the correct one. ' + c[3] : 'This is an older copy. Upload the newest one over it. ' + c[3]); }
+      finish();
+    });
+  }).catch(function () { na++; addRow(c[0], '-', 'na', 'ERROR', 'Could not be read.'); finish(); });
+});
+</script>
+</body>
+</html>
