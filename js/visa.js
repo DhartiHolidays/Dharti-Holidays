@@ -1,111 +1,25 @@
-/* =========================================================
-   visa.html logic
-   ========================================================= */
-
-document.getElementById('year').textContent = new Date().getFullYear();
-const header = document.getElementById('siteHeader');
-document.getElementById('navToggle').addEventListener('click', () => header.classList.toggle('open'));
-
-let visaServices = [];
-
-function visaCardHtml(service) {
-  return `
+document.getElementById("year").textContent=new Date().getFullYear();const header=document.getElementById("siteHeader");document.getElementById("navToggle").addEventListener("click",()=>header.classList.toggle("open"));let visaServices=[];function visaCardHtml(e){return`
     <article class="ticket">
       <div class="ticket-head">
-        <div class="ticket-route">${service.country}<small>${service.visaType}</small></div>
+        <div class="ticket-route">${e.country}<small>${e.visaType}</small></div>
       </div>
       <div class="ticket-perf"></div>
       <div class="ticket-body">
-        <p>${service.notes || 'Documentation guidance and application assistance included.'}</p>
+        <p>${e.notes||"Documentation guidance and application assistance included."}</p>
         <div class="ticket-meta">
-          <span>Processing Time<br><strong>${service.processingTime}</strong></span>
+          <span>Processing Time<br><strong>${e.processingTime}</strong></span>
         </div>
       </div>
       <div class="ticket-foot">
-        <div class="ticket-price">₹${service.price}<span>${service.priceUnit || ''}</span></div>
-        <div class="ticket-actions"><a href="#customVisaForm" class="ticket-link" onclick="prefillVisaCountry('${service.country.replace(/'/g, "\\'")}', '${service.visaType.replace(/'/g, "\\'")}')">Enquire →</a><button type="button" class="share-btn" data-wa-share aria-label="Share on WhatsApp" title="Share on WhatsApp" data-share-url="visa.html?q=${encodeURIComponent(service.country)}" data-share-text="${waAttr('🛂 *' + service.country + ' ' + service.visaType + ' visa* — assistance by Dharti Holidays, Ahmedabad\nService fee ₹' + service.price + ' ' + (service.priceUnit || '') + (service.processingTime ? ' · ' + service.processingTime : ''))}"></button></div>
+        <div class="ticket-price">\u20B9${e.price}<span>${e.priceUnit||""}</span></div>
+        <a href="#customVisaForm" class="ticket-link" onclick="prefillVisaCountry('${e.country.replace(/'/g,"\\'")}', '${e.visaType.replace(/'/g,"\\'")}')">Enquire \u2192</a>
       </div>
-    </article>`;
-}
+    </article>`}function prefillVisaCountry(e,t){document.getElementById("cvCountry").value=e;const n=document.getElementById("cvVisaType"),a=Array.from(n.options).find(s=>t.toLowerCase().includes(s.value.toLowerCase()));a&&(n.value=a.value)}async function loadVisaServices(){const e=document.getElementById("visaGrid");if(e.innerHTML='<p style="color:var(--slate); grid-column:1/-1;">Loading...</p>',typeof APPS_SCRIPT_URL>"u"||APPS_SCRIPT_URL.includes("PASTE_YOUR")){e.innerHTML='<p style="color:var(--slate); grid-column:1/-1;">Visa listings will appear here once connected \u2014 use the form below to enquire directly.</p>';return}try{const n=await(await fetch(`${APPS_SCRIPT_URL}?action=listVisaServices`)).json();visaServices=Array.isArray(n)?n:[],renderVisaGrid(visaServices),applyUrlQuery()}catch(t){e.innerHTML='<p style="color:var(--red); grid-column:1/-1;">Could not load visa services \u2014 please use the form below.</p>',console.error(t)}}function renderVisaGrid(e){const t=document.getElementById("visaGrid"),n=document.getElementById("visaNoResults");if(t.innerHTML="",e.length===0){n.hidden=!1;return}n.hidden=!0,t.innerHTML=e.map(visaCardHtml).join("")}document.getElementById("visaSearch").addEventListener("input",e=>{const t=e.target.value.trim().toLowerCase();if(document.getElementById("visaNoResultsQuery").textContent=e.target.value.trim(),!t){renderVisaGrid(visaServices);return}const n=visaServices.filter(a=>a.country.toLowerCase().includes(t)||a.visaType.toLowerCase().includes(t));renderVisaGrid(n)}),document.getElementById("customVisaForm").addEventListener("submit",e=>{e.preventDefault();const t=document.getElementById("cvCountry").value.trim(),n=document.getElementById("cvVisaType").value,a=document.getElementById("cvTravelDate").value,s=document.getElementById("cvApplicants").value,o=document.getElementById("cvName").value.trim(),c=document.getElementById("cvPhone").value.trim();let i=`Hi Dharti Holidays, I'd like visa assistance:
 
-function prefillVisaCountry(country, visaType) {
-  document.getElementById('cvCountry').value = country;
-  const typeSelect = document.getElementById('cvVisaType');
-  const match = Array.from(typeSelect.options).find(o => visaType.toLowerCase().includes(o.value.toLowerCase()));
-  if (match) typeSelect.value = match.value;
-}
-
-async function loadVisaServices() {
-  const grid = document.getElementById('visaGrid');
-  grid.innerHTML = '<p style="color:var(--slate); grid-column:1/-1;">Loading...</p>';
-
-  if (typeof APPS_SCRIPT_URL === 'undefined' || APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
-    grid.innerHTML = '<p style="color:var(--slate); grid-column:1/-1;">Visa listings will appear here once connected — use the form below to enquire directly.</p>';
-    return;
-  }
-
-  try {
-    const res = await fetch(`${APPS_SCRIPT_URL}?action=listVisaServices`);
-    const rows = await res.json();
-    visaServices = Array.isArray(rows) ? rows : [];
-    renderVisaGrid(visaServices);
-    applyUrlQuery();
-  } catch (err) {
-    grid.innerHTML = '<p style="color:var(--red); grid-column:1/-1;">Could not load visa services — please use the form below.</p>';
-    console.error(err);
-  }
-}
-
-function renderVisaGrid(items) {
-  const grid = document.getElementById('visaGrid');
-  const noResults = document.getElementById('visaNoResults');
-  grid.innerHTML = '';
-
-  if (items.length === 0) {
-    noResults.hidden = false;
-    return;
-  }
-  noResults.hidden = true;
-  grid.innerHTML = items.map(visaCardHtml).join('');
-}
-
-document.getElementById('visaSearch').addEventListener('input', (e) => {
-  const q = e.target.value.trim().toLowerCase();
-  document.getElementById('visaNoResultsQuery').textContent = e.target.value.trim();
-  if (!q) { renderVisaGrid(visaServices); return; }
-  const matches = visaServices.filter(s =>
-    s.country.toLowerCase().includes(q) || s.visaType.toLowerCase().includes(q)
-  );
-  renderVisaGrid(matches);
-});
-
-document.getElementById('customVisaForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const country = document.getElementById('cvCountry').value.trim();
-  const visaType = document.getElementById('cvVisaType').value;
-  const travelDate = document.getElementById('cvTravelDate').value;
-  const applicants = document.getElementById('cvApplicants').value;
-  const name = document.getElementById('cvName').value.trim();
-  const phone = document.getElementById('cvPhone').value.trim();
-
-  let msg = `Hi Dharti Holidays, I'd like visa assistance:\n\n`;
-  msg += `Destination Country: ${country}\n`;
-  msg += `Visa Type: ${visaType}\n`;
-  msg += `Applicants: ${applicants}\n`;
-  if (travelDate) msg += `Planned Travel Date: ${travelDate}\n`;
-  msg += `\nName: ${name}\nPhone: ${phone}`;
-
-  submitEnquiry('visa', name, phone, msg);
-});
-
-loadVisaServices();
-
-function applyUrlQuery() {
-  const q = new URLSearchParams(location.search).get('q');
-  const el = document.getElementById('visaSearch');
-  if (q && el) { el.value = q; el.dispatchEvent(new Event('input')); }
-}
-
-
-// escape text for use inside an HTML attribute (WhatsApp share text)
-function waAttr(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+`;i+=`Destination Country: ${t}
+`,i+=`Visa Type: ${n}
+`,i+=`Applicants: ${s}
+`,a&&(i+=`Planned Travel Date: ${a}
+`),i+=`
+Name: ${o}
+Phone: ${c}`,submitEnquiry("visa",o,c,i)}),loadVisaServices();function applyUrlQuery(){const e=new URLSearchParams(location.search).get("q"),t=document.getElementById("visaSearch");e&&t&&(t.value=e,t.dispatchEvent(new Event("input")))}
