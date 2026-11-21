@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dharti Holidays — Document Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<link rel="stylesheet" href="css/document-studio.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- Password gate — same secret key as admin.html -->
+<div id="dsGateSection" style="max-width:420px; margin:100px auto; text-align:center; font-family:'Work Sans',sans-serif;">
+  <h2 style="font-family:'Fraunces',serif; color:#0B2545;">Document Studio Access</h2>
+  <p style="margin:12px 0 20px; color:#5B6472;">Enter your admin key to continue.</p>
+  <input type="password" id="dsAdminKey" placeholder="Admin key" style="width:100%; padding:12px; text-align:center; border-radius:6px; border:1.5px solid #E4DCC8; margin-bottom:12px;">
+  <button id="dsUnlockBtn" style="width:100%; padding:12px; background:#C9962B; border:none; border-radius:6px; font-weight:700; cursor:pointer;">Unlock</button>
+  <p id="dsGateError" style="color:#C4272B; margin-top:12px; font-size:13px;"></p>
+</div>
+
+<div class="app" id="dsAppRoot" hidden>
+
+  <div class="tool-header">
+    <div>
+      <h1>Dharti Holidays — Document Studio</h1>
+      <p>Upload any DMC/supplier confirmation and generate your branded document</p>
+    </div>
+  </div>
+
+  <div class="settings-toggle" onclick="toggleSettings()">⚙ Company details (used on every document) — click to edit</div>
+  <div class="settings-box" id="settings-box">
+    <div class="row g2">
+      <div><label>Company name</label><input type="text" id="cfg-name" value="Dharti Holidays"></div>
+      <div><label>Tagline</label><input type="text" id="cfg-tagline" value="AHMEDABAD · TRAVEL DESK"></div>
+    </div>
+    <div class="row g2">
+      <div><label>Address</label><input type="text" id="cfg-address" value="521, Satya-2, Ranna Park, Naranpura, Ahmedabad"></div>
+      <div><label>Phone(s)</label><input type="text" id="cfg-phones" value="+91 98797 52230 · +91 93746 15071"></div>
+    </div>
+    <div class="row g2">
+      <div><label>Email</label><input type="text" id="cfg-email" value="dhartiholidays@gmail.com"></div>
+      <div><label>Website</label><input type="text" id="cfg-website" value="www.dhartiholidays.com"></div>
+    </div>
+  </div>
+
+  <div class="main-tabs">
+    <div class="main-tab active" data-tab="itinerary" onclick="switchMainTab('itinerary')">Itinerary</div>
+    <div class="main-tab" data-tab="flight" onclick="switchMainTab('flight')">Flight Voucher</div>
+    <div class="main-tab" data-tab="hotel" onclick="switchMainTab('hotel')">Hotel Voucher</div>
+    <div class="main-tab" data-tab="car" onclick="switchMainTab('car')">Car Transfer Voucher</div>
+    <div class="main-tab" data-tab="documents" onclick="switchMainTab('documents')">My Documents <span class="count" id="doc-count">0</span></div>
+
+  </div>
+
+  <!-- ================= ITINERARY TAB ================= -->
+  <div class="tab-panel active" id="tab-itinerary">
+    <div class="step-row">
+      <div class="step-pill active" id="it-pill-1" onclick="itGoStep(1)">1 · Upload DMC itinerary</div>
+      <div class="step-pill" id="it-pill-2" onclick="itGoStep(2)">2 · Review &amp; edit</div>
+      <div class="step-pill" id="it-pill-3" onclick="itGoStep(3)">3 · Branded output</div>
+    </div>
+
+    <div class="panel" id="it-step-1">
+      <h2>Upload the DMC's itinerary</h2>
+      <p class="hint">PDF or Word (.docx). The tool reads the text, then Claude extracts the trip details into an editable form.</p>
+      <div class="drop" id="it-drop-zone" onclick="document.getElementById('it-file-input').click()">
+        <strong>Click to choose a file</strong> or drag a PDF / DOCX here
+        <input type="file" id="it-file-input" accept=".pdf,.docx" style="display:none">
+        <div id="it-file-chip-holder"></div>
+      </div>
+      <div class="divider-or">or paste the itinerary text directly</div>
+      <textarea id="it-raw-text" placeholder="Paste the DMC's itinerary text here..." style="min-height:120px"></textarea>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="itLoadSample()">Load a sample DMC itinerary (for testing)</button>
+        <button class="btn btn-primary" id="it-extract-btn" onclick="itRunExtraction()">Extract with AI →</button>
+      </div>
+      <div class="progress" id="it-progress-1"></div>
+    </div>
+
+    <div class="panel" id="it-step-2" style="display:none">
+      <h2>Review &amp; edit extracted details</h2>
+      <p class="hint">Fix anything the AI missed before generating your branded document.</p>
+      <div class="section-label" style="margin-top:0">TRIP OVERVIEW</div>
+      <div class="row g4">
+        <div><label>Trip reference</label><input type="text" id="ov-tripref"></div>
+        <div><label>Destination</label><input type="text" id="ov-destination"></div>
+        <div><label>Start date</label><input type="text" id="ov-startdate"></div>
+        <div><label>Duration</label><input type="text" id="ov-duration"></div>
+      </div>
+      <div class="row g2">
+        <div><label>Travellers</label><input type="text" id="ov-travelers"></div>
+        <div><label>Notes (one per line)</label><textarea id="ov-notes" style="min-height:50px"></textarea></div>
+      </div>
+      <div class="section-label">HOTELS <button class="btn btn-outline btn-sm" onclick="addHotelRow()">+ Add hotel</button></div>
+      <div id="hotels-editor"></div>
+      <div class="section-label">DAY-WISE ITINERARY <button class="btn btn-outline btn-sm" onclick="addDayRow()">+ Add day</button></div>
+      <div id="days-editor"></div>
+      <div class="section-label">PACKAGE COST</div>
+      <div class="row g4">
+        <div><label>Per person price</label><input type="text" id="cost-perperson"></div>
+        <div><label>Total travellers</label><input type="text" id="cost-pax"></div>
+        <div><label>Total price</label><input type="text" id="cost-total"></div>
+        <div><label>Note</label><input type="text" id="cost-note"></div>
+      </div>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="itGoStep(1)">← Back</button>
+        <button class="btn btn-gold" onclick="itGoToOutput()">Generate branded output →</button>
+      </div>
+    </div>
+
+    <div id="it-step-3" style="display:none">
+      <div class="preview-toolbar">
+        <button class="btn btn-outline" onclick="itGoStep(2)">← Back to edit</button>
+        <div>
+          <button class="btn btn-outline" onclick="addCurrentToDocuments('itinerary')">+ Add to My Documents</button>
+          <button class="btn btn-gold" onclick="printOne('itinerary')">🖨 Print / Save as PDF</button>
+        </div>
+      </div>
+      <div class="doc" id="it-doc-root"></div>
+    </div>
+  </div>
+
+  <!-- ================= FLIGHT TAB ================= -->
+  <div class="tab-panel" id="tab-flight">
+    <div class="step-row">
+      <div class="step-pill active" id="fl-pill-1" onclick="flGoStep(1)">1 · Upload e-ticket</div>
+      <div class="step-pill" id="fl-pill-2" onclick="flGoStep(2)">2 · Review &amp; edit</div>
+      <div class="step-pill" id="fl-pill-3" onclick="flGoStep(3)">3 · Branded voucher</div>
+    </div>
+    <div class="panel" id="fl-step-1">
+      <h2>Upload the airline e-ticket / booking confirmation</h2>
+      <p class="hint">PDF, Word, or paste the text. Works with any airline/booking-portal format.</p>
+      <div class="drop" id="fl-drop-zone" onclick="document.getElementById('fl-file-input').click()">
+        <strong>Click to choose a file</strong> or drag a PDF / DOCX here
+        <input type="file" id="fl-file-input" accept=".pdf,.docx" style="display:none">
+        <div id="fl-file-chip-holder"></div>
+      </div>
+      <div class="divider-or">or paste the text directly</div>
+      <textarea id="fl-raw-text" placeholder="Paste the e-ticket text here..." style="min-height:120px"></textarea>
+      <div class="footer-actions">
+        <span></span>
+        <button class="btn btn-primary" id="fl-extract-btn" onclick="flRunExtraction()">Extract with AI →</button>
+      </div>
+      <div class="progress" id="fl-progress-1"></div>
+      <p class="hint" style="margin-top:10px">No confirmation to upload? <a href="#" onclick="flGoStep(2);return false;">Skip and fill in the details manually →</a></p>
+    </div>
+    <div class="panel" id="fl-step-2" style="display:none">
+      <h2>Review &amp; edit flight details</h2>
+      <div class="row g4">
+        <div><label>PNR</label><input type="text" id="fl-pnr"></div>
+        <div><label>Booking / e-ticket ref</label><input type="text" id="fl-bookingref"></div>
+        <div><label>Issued date</label><input type="text" id="fl-issued"></div>
+        <div><label>Status</label><input type="text" id="fl-status" value="Confirmed"></div>
+      </div>
+      <div class="section-sub">PASSENGERS <button class="btn btn-outline btn-sm" onclick="flAddPassenger()">+ Add passenger</button></div>
+      <div id="fl-passengers-editor"></div>
+      <div class="section-sub">FLIGHT SEGMENTS <button class="btn btn-outline btn-sm" onclick="flAddSegment()">+ Add segment</button></div>
+      <div id="fl-segments-editor"></div>
+      <div class="section-sub">FARE</div>
+      <div class="row g4">
+        <div><label>Base fare</label><input type="text" id="fl-fare-base"></div>
+        <div><label>Taxes/GST</label><input type="text" id="fl-fare-taxes"></div>
+        <div><label>Fees/surcharge</label><input type="text" id="fl-fare-fees"></div>
+        <div><label>Total amount</label><input type="text" id="fl-fare-total"></div>
+      </div>
+      <div class="section-sub">NOTES</div>
+      <textarea id="fl-notes" placeholder="One note per line" style="min-height:70px"></textarea>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="flGoStep(1)">← Back</button>
+        <button class="btn btn-gold" onclick="flGoToOutput()">Generate branded voucher →</button>
+      </div>
+    </div>
+    <div id="fl-step-3" style="display:none">
+      <div class="preview-toolbar">
+        <button class="btn btn-outline" onclick="flGoStep(2)">← Back to edit</button>
+        <div>
+          <button class="btn btn-outline" onclick="addCurrentToDocuments('flight')">+ Add to My Documents</button>
+          <button class="btn btn-gold" onclick="printOne('flight')">🖨 Print / Save as PDF</button>
+        </div>
+      </div>
+      <div class="doc" id="fl-doc-root"></div>
+    </div>
+  </div>
+
+  <!-- ================= HOTEL TAB ================= -->
+  <div class="tab-panel" id="tab-hotel">
+    <div class="step-row">
+      <div class="step-pill active" id="ht-pill-1" onclick="htGoStep(1)">1 · Upload hotel voucher</div>
+      <div class="step-pill" id="ht-pill-2" onclick="htGoStep(2)">2 · Review &amp; edit</div>
+      <div class="step-pill" id="ht-pill-3" onclick="htGoStep(3)">3 · Branded voucher</div>
+    </div>
+    <div class="panel" id="ht-step-1">
+      <h2>Upload the hotel booking confirmation</h2>
+      <p class="hint">PDF, Word, or paste the text. Works with any hotel/OTA confirmation format.</p>
+      <div class="drop" id="ht-drop-zone" onclick="document.getElementById('ht-file-input').click()">
+        <strong>Click to choose a file</strong> or drag a PDF / DOCX here
+        <input type="file" id="ht-file-input" accept=".pdf,.docx" style="display:none">
+        <div id="ht-file-chip-holder"></div>
+      </div>
+      <div class="divider-or">or paste the text directly</div>
+      <textarea id="ht-raw-text" placeholder="Paste the hotel voucher text here..." style="min-height:120px"></textarea>
+      <div class="footer-actions">
+        <span></span>
+        <button class="btn btn-primary" id="ht-extract-btn" onclick="htRunExtraction()">Extract with AI →</button>
+      </div>
+      <div class="progress" id="ht-progress-1"></div>
+      <p class="hint" style="margin-top:10px">No confirmation to upload? <a href="#" onclick="htGoStep(2);return false;">Skip and fill in the details manually →</a></p>
+    </div>
+    <div class="panel" id="ht-step-2" style="display:none">
+      <h2>Review &amp; edit hotel details</h2>
+      <div class="row g4">
+        <div><label>Confirmation no.</label><input type="text" id="ht-confno"></div>
+        <div><label>Status</label><input type="text" id="ht-status" value="Confirmed"></div>
+        <div><label>Check-in date</label><input type="text" id="ht-checkin"></div>
+        <div><label>Check-out date</label><input type="text" id="ht-checkout"></div>
+      </div>
+      <div class="row g3">
+        <div><label>Hotel name</label><input type="text" id="ht-hotelname"></div>
+        <div><label>Hotel address</label><input type="text" id="ht-address"></div>
+        <div><label>Star rating</label><input type="number" id="ht-stars" min="1" max="5" value="4"></div>
+      </div>
+      <div class="row g2">
+        <div><label>Hotel phone</label><input type="text" id="ht-phone"></div>
+        <div><label>No. of nights</label><input type="text" id="ht-nights"></div>
+      </div>
+      <div class="section-sub">GUESTS <button class="btn btn-outline btn-sm" onclick="htAddGuest()">+ Add guest</button></div>
+      <div id="ht-guests-editor"></div>
+      <div class="section-sub">ROOMS <button class="btn btn-outline btn-sm" onclick="htAddRoom()">+ Add room</button></div>
+      <div id="ht-rooms-editor"></div>
+      <div class="section-sub">AMOUNT</div>
+      <div class="row g3">
+        <div><label>Total amount</label><input type="text" id="ht-amount"></div>
+        <div><label>Payment status</label><input type="text" id="ht-paystatus" placeholder="e.g. Prepaid"></div>
+        <div><label>Cancellation policy</label><input type="text" id="ht-cancel" placeholder="e.g. Non-refundable"></div>
+      </div>
+      <div class="section-sub">NOTES / REMARKS</div>
+      <textarea id="ht-notes" placeholder="One note per line" style="min-height:70px"></textarea>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="htGoStep(1)">← Back</button>
+        <button class="btn btn-gold" onclick="htGoToOutput()">Generate branded voucher →</button>
+      </div>
+    </div>
+    <div id="ht-step-3" style="display:none">
+      <div class="preview-toolbar">
+        <button class="btn btn-outline" onclick="htGoStep(2)">← Back to edit</button>
+        <div>
+          <button class="btn btn-outline" onclick="addCurrentToDocuments('hotel')">+ Add to My Documents</button>
+          <button class="btn btn-gold" onclick="printOne('hotel')">🖨 Print / Save as PDF</button>
+        </div>
+      </div>
+      <div class="doc" id="ht-doc-root"></div>
+    </div>
+  </div>
+
+  <!-- ================= CAR TAB ================= -->
+  <div class="tab-panel" id="tab-car">
+    <div class="step-row">
+      <div class="step-pill active" id="cv-pill-1" onclick="cvGoStep(1)">1 · Upload confirmation (optional)</div>
+      <div class="step-pill" id="cv-pill-2" onclick="cvGoStep(2)">2 · Review &amp; edit</div>
+      <div class="step-pill" id="cv-pill-3" onclick="cvGoStep(3)">3 · Branded voucher</div>
+    </div>
+    <div class="panel" id="cv-step-1">
+      <h2>Upload a car/transfer confirmation, or skip straight to the form</h2>
+      <p class="hint">No standard supplier format needed — paste any vendor email/message, or just fill the form directly in step 2.</p>
+      <div class="drop" id="cv-drop-zone" onclick="document.getElementById('cv-file-input').click()">
+        <strong>Click to choose a file</strong> or drag a PDF / DOCX here
+        <input type="file" id="cv-file-input" accept=".pdf,.docx" style="display:none">
+        <div id="cv-file-chip-holder"></div>
+      </div>
+      <div class="divider-or">or paste the text directly</div>
+      <textarea id="cv-raw-text" placeholder="Paste the transfer confirmation text here (optional)..." style="min-height:120px"></textarea>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="cvGoStep(2)">Skip — fill form manually →</button>
+        <button class="btn btn-primary" id="cv-extract-btn" onclick="cvRunExtraction()">Extract with AI →</button>
+      </div>
+      <div class="progress" id="cv-progress-1"></div>
+    </div>
+    <div class="panel" id="cv-step-2" style="display:none">
+      <h2>Review &amp; edit transfer details</h2>
+      <div class="row g4">
+        <div><label>Confirmation no.</label><input type="text" id="cv-confno"></div>
+        <div><label>Status</label><input type="text" id="cv-status" value="Confirmed"></div>
+        <div><label>Pickup date</label><input type="text" id="cv-date"></div>
+        <div><label>Pickup time</label><input type="text" id="cv-time"></div>
+      </div>
+      <div class="row g2">
+        <div><label>Pickup location</label><input type="text" id="cv-pickup"></div>
+        <div><label>Drop location</label><input type="text" id="cv-drop"></div>
+      </div>
+      <div class="row g3">
+        <div><label>Passenger name(s)</label><input type="text" id="cv-passenger"></div>
+        <div><label>Passenger contact</label><input type="text" id="cv-passcontact"></div>
+        <div><label>Vehicle type</label><input type="text" id="cv-vehicle" placeholder="e.g. Toyota Innova / Sedan"></div>
+      </div>
+      <div class="row g3">
+        <div><label>Driver name</label><input type="text" id="cv-driver"></div>
+        <div><label>Driver contact</label><input type="text" id="cv-drivercontact"></div>
+        <div><label>Vendor / operator name</label><input type="text" id="cv-vendor"></div>
+      </div>
+      <div class="row g2">
+        <div><label>Reference (flight/train no. for coordination)</label><input type="text" id="cv-ref"></div>
+        <div><label>Fare</label><input type="text" id="cv-fare"></div>
+      </div>
+      <div class="section-sub">NOTES / TERMS</div>
+      <textarea id="cv-notes" placeholder="One note per line" style="min-height:70px">Driver will contact the lead passenger 1 hour prior to pickup.
+Waiting time beyond 30 minutes free; extra waiting charged as per vendor policy.
+Any detours, extra km, or extra hours beyond the agreed itinerary will be charged additionally.
+Please carry a valid photo ID during the journey.</textarea>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="cvGoStep(1)">← Back</button>
+        <button class="btn btn-gold" onclick="cvGoToOutput()">Generate branded voucher →</button>
+      </div>
+    </div>
+    <div id="cv-step-3" style="display:none">
+      <div class="preview-toolbar">
+        <button class="btn btn-outline" onclick="cvGoStep(2)">← Back to edit</button>
+        <div>
+          <button class="btn btn-outline" onclick="addCurrentToDocuments('car')">+ Add to My Documents</button>
+          <button class="btn btn-gold" onclick="printOne('car')">🖨 Print / Save as PDF</button>
+        </div>
+      </div>
+      <div class="doc" id="cv-doc-root"></div>
+    </div>
+  </div>
+
+  <!-- ================= DOCUMENTS TAB ================= -->
+  <div class="tab-panel" id="tab-documents">
+    <div class="panel">
+      <h2>My Documents</h2>
+      <p class="hint">Every voucher/itinerary you generate and add here can be combined and printed together as one PDF — e.g. itinerary + flight + hotel + car for one traveller's full pack.</p>
+      <div id="documents-list"></div>
+      <div class="footer-actions">
+        <button class="btn btn-outline" onclick="clearDocuments()">Clear all</button>
+        <button class="btn btn-gold" onclick="printSelectedDocuments()">🖨 Print / Save selected as one PDF</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="print-area"></div>
+
+<script src="js/config.js"></script>
+<script src="js/document-studio.js"></script>
+<script>
+  // Password gate — same secret key as admin.html. Nothing below
+  // loads/initializes until this passes.
+  document.getElementById('dsUnlockBtn').addEventListener('click', unlockDocStudio);
+  document.getElementById('dsAdminKey').addEventListener('keydown', (e) => { if (e.key === 'Enter') unlockDocStudio(); });
+
+  async function unlockDocStudio() {
+    const key = document.getElementById('dsAdminKey').value.trim();
+    const errorEl = document.getElementById('dsGateError');
+    errorEl.textContent = '';
+    if (!key) return;
+
+    if (typeof APPS_SCRIPT_URL === 'undefined' || APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
+      errorEl.textContent = 'Backend not configured yet — set up js/config.js first.';
+      return;
+    }
+
+    document.getElementById('dsUnlockBtn').textContent = 'Checking...';
+    try {
+      // Reuse the existing listPending check purely to validate the key
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=listPending&key=${encodeURIComponent(key)}`);
+      const data = await res.json();
+      if (data.error === 'unauthorized') {
+        errorEl.textContent = 'Incorrect admin key.';
+        document.getElementById('dsUnlockBtn').textContent = 'Unlock';
+        return;
+      }
+      window.docStudioAdminKey = key; // used by callClaude() in document-studio.js
+      document.getElementById('dsGateSection').hidden = true;
+      document.getElementById('dsAppRoot').hidden = false;
+    } catch (err) {
+      errorEl.textContent = 'Could not reach the server. Check your connection and try again.';
+      document.getElementById('dsUnlockBtn').textContent = 'Unlock';
+    }
+  }
+</script>
+</body>
+</html>
